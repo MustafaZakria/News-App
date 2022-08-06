@@ -1,19 +1,17 @@
 package com.example.newsapplication.News
 
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsapplication.R
+import com.google.gson.annotations.SerializedName
 
 
-class NewsAdapter(private val news: Array<News>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+class NewsAdapter(private val news: Array<News>?) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         var v = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
@@ -22,16 +20,16 @@ class NewsAdapter(private val news: Array<News>) : RecyclerView.Adapter<NewsAdap
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val news = news[position]
+        val news = news?.get(position)
 
-        holder.itemTitle.text = news.title
+        holder.itemTitle.text = news?.title
 
-        Glide.with(holder.itemView).load(news.urlToImage).into(holder.itemImageURL)
+        Glide.with(holder.itemView).load(news?.urlToImage).into(holder.itemImageURL)
 
     }
 
     override fun getItemCount(): Int {
-        return news.size
+        return news?.size ?: 0
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -44,7 +42,7 @@ class NewsAdapter(private val news: Array<News>) : RecyclerView.Adapter<NewsAdap
 
             view.setOnClickListener {
                 val pos: Int = adapterPosition
-                val url = news[pos].url
+                val url = news?.get(pos)?.url
 
                 //val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 //startActivity(browserIntent)
@@ -56,6 +54,11 @@ class NewsAdapter(private val news: Array<News>) : RecyclerView.Adapter<NewsAdap
 
 data class News(
     val title: String,
-    val urlToImage: String,
+    val urlToImage: String? = null,
     val url: String,
+)
+
+data class NewsList (
+    @SerializedName("articles")
+    val articles: List<News>? = null
 )

@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.newsapplication.R
 import com.example.newsapplication.Network.retrofit
+import com.example.newsapplication.News.NewsList
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,39 +26,29 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
 
-        var news:Array<News> = getNews()
+        var news:Array<News>? = requestNews()
         val adapter = NewsAdapter(news)
         recyclerView.adapter = adapter
-
-        requestNews()
     }
 
-    private fun getNews(): Array<News> {
-        val generator = WordGenerator()
-
-        return Array(100) {
-            val len = (10..50).random()
-            val width = (100..150).random()
-            val height = (100..150).random()
-
-            News(generator.newWord(len), "https://picsum.photos/${width}/${height}", "https://picsum.photos/")
-        }
-    }
-
-    private fun requestNews() {
-        retrofit.news().enqueue(object : Callback<List<News>> {
-            override fun onResponse(call: Call<List<News>>, response: Response<List<News>>) {
+    private fun requestNews() : Array<News>? {
+        var news:Array<News>? = null
+        retrofit.news().enqueue(object : Callback<NewsList> {
+            override fun onResponse(call: Call<NewsList>, response: Response<NewsList>) {
                 if (response.isSuccessful) {
-                    Log.d("***", "onResponse ${response.body().toString()}")
+                    news = response.body()?.articles?.toTypedArray()
+                    Log.d("*****++", "onResponse ${news?.get(0).toString()}") ///
                 } else {
                     Log.d("***", "onResponse ${response.code()}")
                 }
             }
 
-            override fun onFailure(call: Call<List<News>>, t: Throwable) {
+            override fun onFailure(call: Call<NewsList>, t: Throwable) {
                 Log.d("***", "onFailure ${t.localizedMessage} ")
             }
         })
+        Log.d("*****..", "onResponse ${news?.get(0).toString()}")  ///
+        return news
     }
 
 }
