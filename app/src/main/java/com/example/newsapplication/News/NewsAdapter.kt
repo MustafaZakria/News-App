@@ -1,29 +1,42 @@
 package com.example.newsapplication.News
 
+import android.content.Intent
+import android.net.Uri
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.newsapplication.R
 
+
 class NewsAdapter(private val news: Array<News>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        TODO("Not yet implemented")
+        var v = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+
+        return ViewHolder(v)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val news = news[position]
+
+        holder.itemTitle.text = news.title
+
+        Glide.with(holder.itemView).load(news.urlToImage).into(holder.itemImageURL)
+
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+        return news.size
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val itemTitle: TextView
-        private val itemImageURL: ImageView
+         val itemTitle: TextView
+         val itemImageURL: ImageView
 
         init {
             itemTitle = view.findViewById(R.id.itemText)
@@ -31,7 +44,11 @@ class NewsAdapter(private val news: Array<News>) : RecyclerView.Adapter<NewsAdap
 
             view.setOnClickListener {
                 val pos: Int = adapterPosition
-                ////////////////////////
+                val url = news[pos].url
+
+                //val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                //startActivity(browserIntent)
+
             }
         }
     }
