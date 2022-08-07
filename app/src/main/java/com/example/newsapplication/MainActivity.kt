@@ -18,7 +18,7 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     var news:Array<News>? = null
-
+    //
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
