@@ -1,5 +1,9 @@
 package com.example.newsapplication.News
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +15,7 @@ import com.example.newsapplication.R
 import com.google.gson.annotations.SerializedName
 
 
-class NewsAdapter(private val news: Array<News>?) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+class NewsAdapter(private val news: List<News>?, val mContext: Context, val recyclerView: RecyclerView?) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         var v = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
@@ -44,9 +48,27 @@ class NewsAdapter(private val news: Array<News>?) : RecyclerView.Adapter<NewsAda
                 val pos: Int = adapterPosition
                 val url = news?.get(pos)?.url
 
-                //val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                val text:String? = news?.get(pos)?.title
+
+
+                mContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+                matches(recyclerView, text)
                 //startActivity(browserIntent)
 
+            }
+        }
+    }
+
+    public fun matches(recyclerView: RecyclerView?, text:String?) {
+        val itemCount = recyclerView?.adapter?.itemCount
+        for (i in 0 until itemCount!!) {
+            val holder = recyclerView?.findViewHolderForAdapterPosition(i)
+            if (holder != null) {
+                val tvHolder = holder.itemView.findViewById<View>(R.id.itemText) as TextView
+                if (tvHolder.text == text) {
+                    tvHolder.setTextColor(Color.parseColor("#CC33CC"))
+                }
             }
         }
     }
