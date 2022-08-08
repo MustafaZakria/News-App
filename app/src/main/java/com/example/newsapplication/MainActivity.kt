@@ -8,6 +8,7 @@ import com.example.newsapplication.News.News
 import com.example.newsapplication.News.NewsAdapter
 import com.maximeroussy.invitrode.WordGenerator
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.newsapplication.R
 import com.example.newsapplication.Network.retrofit
@@ -17,23 +18,33 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
-    var news:Array<News>? = null
+    var news:List<News>? = null
+    var adapter:RecyclerView.Adapter<NewsAdapter.ViewHolder>? = null
+    var recyclerView:RecyclerView? = null
+    var layoutManager:RecyclerView.LayoutManager? = null
     //
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-
-        val layoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
+        recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        layoutManager = LinearLayoutManager(this)
+        recyclerView?.layoutManager = layoutManager
 
         requestNews()
+        Log.d("===", "onResponse ")
+    }
 
-        Log.d("***", "onResponse ${news?.get(0).toString()}")
+    private fun randomWords(): Array<News> {
+        val generator = WordGenerator()
 
-        val adapter = NewsAdapter(news)
-        recyclerView.adapter = adapter
+        return Array(100) {
+            val len = (10..50).random()
+            val width = (100..150).random()
+            val height = (100..150).random()
+
+            News(generator.newWord(len), "https://picsum.photos/${width}/${height}", "https://picsum.photos/${width}/${height}")
+        }
     }
 
     fun requestNews()  {
@@ -41,8 +52,11 @@ class MainActivity : AppCompatActivity() {
         retrofit.news().enqueue(object : Callback<NewsList> {
             override fun onResponse(call: Call<NewsList>, response: Response<NewsList>) {
                 if (response.isSuccessful) {
-                    news = response.body()?.articles?.toTypedArray()
-                    Log.d("****", "onResponse ${news?.get(0).toString()}")
+                    news = response.body()?.articles
+                    Log.d("****", "onResponse ${response.body()?.articles.toString()}")
+                    adapter = NewsAdapter(news, this@MainActivity, recyclerView)
+                    recyclerView?.adapter = adapter
+
                 } else {
                     Log.d("***", "onResponse ${response.code()}")
                 }
